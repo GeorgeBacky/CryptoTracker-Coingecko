@@ -6,17 +6,24 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const page = searchParams.get('page') || '1';
     const per_page = searchParams.get('per_page') || '20';
+    const ids = searchParams.get('ids'); // comma-separated list of coin ids
 
-    const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${per_page}&page=${page}&sparkline=false&price_change_percentage=24h`,
-      {
-        headers: {
-          'Accept': 'application/json',
-          'x-cg-demo-api-key': process.env.COINGECKO_API_KEY || ''
-        },
-        next: { revalidate: 60 } // Cache for 60 seconds
-      }
-    );
+    let url = '';
+    if (ids) {
+      // If ids are provided, fetch only those coins
+      url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&sparkline=false&price_change_percentage=24h`;
+    } else {
+      // Default: paginated market data
+      url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${per_page}&page=${page}&sparkline=false&price_change_percentage=24h`;
+    }
+
+    const response = await fetch(url, {
+      headers: {
+        'Accept': 'application/json',
+        'x-cg-demo-api-key': process.env.COINGECKO_API_KEY || ''
+      },
+      next: { revalidate: 60 } // Cache for 60 seconds
+    });
 
     if (!response.ok) {
       throw new Error(`CoinGecko API error: ${response.status}`);

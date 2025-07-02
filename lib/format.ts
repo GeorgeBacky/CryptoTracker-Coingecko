@@ -1,4 +1,5 @@
-export function formatPrice(price: number): string {
+export function formatPrice(price: number | null | undefined): string {
+  if (price == null || isNaN(price)) return '-';
   if (price >= 1) {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -16,11 +17,13 @@ export function formatPrice(price: number): string {
   }
 }
 
-export function formatPercentage(percentage: number): string {
+export function formatPercentage(percentage: number | null | undefined): string {
+  if (percentage == null || isNaN(percentage)) return '-';
   return `${percentage > 0 ? '+' : ''}${percentage.toFixed(2)}%`;
 }
 
-export function formatMarketCap(marketCap: number): string {
+export function formatMarketCap(marketCap: number | null | undefined): string {
+  if (marketCap == null || isNaN(marketCap)) return '-';
   if (marketCap >= 1e12) {
     return `$${(marketCap / 1e12).toFixed(2)}T`;
   } else if (marketCap >= 1e9) {
@@ -32,6 +35,7 @@ export function formatMarketCap(marketCap: number): string {
   }
 }
 
-export function getPercentageColor(percentage: number): string {
+export function getPercentageColor(percentage: number | null | undefined): string {
+  if (percentage == null || isNaN(percentage)) return '';
   return percentage >= 0 ? 'text-green-600' : 'text-red-600';
 }

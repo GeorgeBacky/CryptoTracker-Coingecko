@@ -101,41 +101,41 @@ export default function CoinDetailPage() {
 
         {loading ? (
           <div className="space-y-6">
-            <Card>
+            <Card className="border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
               <CardHeader>
                 <div className="flex items-center gap-4">
-                  <Skeleton className="w-16 h-16 rounded-full" />
+                  <Skeleton className="w-16 h-16 rounded-full bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800" />
                   <div className="space-y-2">
-                    <Skeleton className="h-8 w-48" />
-                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-8 w-48 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800" />
+                    <Skeleton className="h-4 w-24 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800" />
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
-                    <Skeleton className="h-12 w-32" />
-                    <Skeleton className="h-6 w-24" />
+                    <Skeleton className="h-12 w-32 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800" />
+                    <Skeleton className="h-6 w-24 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800" />
                   </div>
                   <div className="space-y-4">
-                    <Skeleton className="h-6 w-full" />
-                    <Skeleton className="h-6 w-full" />
-                    <Skeleton className="h-6 w-3/4" />
+                    <Skeleton className="h-6 w-full bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800" />
+                    <Skeleton className="h-6 w-full bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800" />
+                    <Skeleton className="h-6 w-3/4 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800" />
                   </div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card>
+            <Card className="border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
               <CardHeader>
-                <Skeleton className="h-6 w-48" />
+                <Skeleton className="h-6 w-48 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800" />
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {Array.from({ length: 8 }).map((_, i) => (
                     <div key={i} className="space-y-2">
-                      <Skeleton className="h-4 w-16" />
-                      <Skeleton className="h-6 w-20" />
+                      <Skeleton className="h-4 w-16 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800" />
+                      <Skeleton className="h-6 w-20 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800" />
                     </div>
                   ))}
                 </div>

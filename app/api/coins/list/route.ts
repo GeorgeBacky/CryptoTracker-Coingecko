@@ -96,8 +96,8 @@ export async function GET(request: NextRequest) {
       throw new Error('Invalid response format from CoinGecko API');
     }
 
-    // Extract and structure the first 10 results
-    const limitedResults = data.slice(0, 10).map(coin => ({
+    // Structure all results (no limit)
+    const allResults = data.map(coin => ({
       id: coin.id || 'unknown',
       symbol: coin.symbol || 'unknown',
       name: coin.name || 'Unknown Coin'
@@ -105,12 +105,12 @@ export async function GET(request: NextRequest) {
 
     // Prepare structured response
     const coinListResponse: CoinListResponse = {
-      coins: limitedResults,
-      total: limitedResults.length
+      coins: allResults,
+      total: allResults.length
     };
 
     // Log successful fetch for monitoring
-    console.log(`Successfully fetched ${limitedResults.length} coins from CoinGecko API`);
+    console.log(`Successfully fetched ${allResults.length} coins from CoinGecko API`);
 
     return NextResponse.json(coinListResponse, {
       headers: {

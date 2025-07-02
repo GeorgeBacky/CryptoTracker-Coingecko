@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CoinMarket, MarketResponse } from '@/types/crypto';
+import { CoinMarket, MarketResponse, CoinListItem, CoinListResponse } from '@/types/crypto';
 import { CoinCard } from '@/components/coin-card';
 import { CoinSkeleton } from '@/components/coin-skeleton';
 import { PaginationControls } from '@/components/pagination-controls';
@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SearchIcon, RefreshCwIcon, TrendingUpIcon, ListIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useTheme } from 'next-themes';
+import { SunIcon, MoonIcon } from 'lucide-react';
 
 export default function Home() {
   const [coins, setCoins] = useState<CoinMarket[]>([]);
@@ -17,9 +19,13 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [allCoinsList, setAllCoinsList] = useState<CoinListItem[]>([]);
+  const [searchResults, setSearchResults] = useState<CoinMarket[] | null>(null);
   
   const PER_PAGE = 20;
   const TOTAL_PAGES = 10; // Limiting to 10 pages for better UX
+
+  const { theme, setTheme } = useTheme();
 
   const fetchCoins = async (page: number = 1) => {
     try {
@@ -42,6 +48,26 @@ export default function Home() {
     }
   };
 
+  const fetchAllCoinsList = async () => {
+    try {
+      const response = await fetch('/api/coins/list');
+      if (!response.ok) throw new Error('Failed to fetch coins list');
+      const data: CoinListResponse = await response.json();
+      setAllCoinsList(data.coins);
+    } catch (err) {
+      // Optionally handle error
+    }
+  };
+
+  const fetchMarketDataForIds = async (ids: string[]) => {
+    if (ids.length === 0) return [];
+    const idsParam = ids.join(',');
+    const response = await fetch(`/api/coins/markets?ids=${idsParam}`);
+    if (!response.ok) throw new Error('Failed to fetch market data for search results');
+    const data: MarketResponse = await response.json();
+    return data.coins;
+  };
+
   const handleRefresh = async () => {
     setRefreshing(true);
     await fetchCoins(currentPage);
@@ -54,8 +80,39 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchCoins(1);
+    if (!searchTerm) {
+      setSearchResults(null);
+      fetchCoins(1);
+    }
+  }, [searchTerm]);
+
+  useEffect(() => {
+    fetchAllCoinsList();
   }, []);
+
+  useEffect(() => {
+    const doSearch = async () => {
+      if (!searchTerm) return;
+      setLoading(true);
+      const filtered = allCoinsList.filter(coin =>
+        coin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        coin.symbol.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      const topMatches = filtered.slice(0, 20);
+      try {
+        const marketData = await fetchMarketDataForIds(topMatches.map(c => c.id));
+        setSearchResults(marketData);
+      } catch (err) {
+        setError('Failed to fetch market data for search results');
+        setSearchResults([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (searchTerm && allCoinsList.length > 0) {
+      doSearch();
+    }
+  }, [searchTerm, allCoinsList]);
 
   const filteredCoins = coins.filter(coin =>
     coin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -135,6 +192,25 @@ export default function Home() {
               <CoinSkeleton key={index} />
             ))}
           </div>
+        ) : searchTerm ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {searchResults && searchResults.length > 0 && searchResults.map((coin) => (
+                <CoinCard key={coin.id} coin={coin} />
+              ))}
+            </div>
+            {searchResults && searchResults.length === 0 && (
+              <div className="text-center py-12">
+                <div className="text-gray-500 text-4xl mb-4">🔍</div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  No results found
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Try searching with a different term
+                </p>
+              </div>
+            )}
+          </>
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
